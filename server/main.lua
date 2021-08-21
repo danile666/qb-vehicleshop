@@ -123,16 +123,36 @@ end
 
 QBCore.Commands.Add("sell", "Sell Vehicle (Car Dealer Only)", {{name="ID", help="ID of Player to sell to"}}, true, function(source, args)
     local TargetId = tonumber(args[1])
+    local Player = QBCore.Functions.GetPlayer(source)
 
     if CheckOwnedJob(source) then
-        if TargetId ~= nil then
-            if #(GetEntityCoords(GetPlayerPed(source)) - GetEntityCoords(GetPlayerPed(TargetId))) < 3.0 then
-                TriggerClientEvent('qb-vehicleshop:client:SellCustomVehicle', source, TargetId)
+        if Player.PlayerData.job.name ~="police" then
+            if TargetId ~= nil then
+                if #(GetEntityCoords(GetPlayerPed(source)) - GetEntityCoords(GetPlayerPed(TargetId))) < 3.0 then
+                    TriggerClientEvent('qb-vehicleshop:client:SellCustomVehicle', source, TargetId)
+                else
+                    TriggerClientEvent('QBCore:Notify', source, 'The provided Player with ID '..TargetId..' is not nearby', 'error')
+                end
             else
-                TriggerClientEvent('QBCore:Notify', source, 'The provided Player with ID '..TargetId..' is not nearby', 'error')
+                TriggerClientEvent('QBCore:Notify', source, 'You must provide a Player ID!', 'error')
             end
         else
-            TriggerClientEvent('QBCore:Notify', source, 'You must provide a Player ID!', 'error')
+            TriggerClientEvent('QBCore:Notify', source, "You don't have access to this command", 'error')
+        end
+    else
+        TriggerClientEvent('QBCore:Notify', source, "You don't have access to this command", 'error')
+    end
+end)
+
+QBCore.Commands.Add("buy", "Buy LEO Vehicle (Law Enforcement Only)", {}, true, function(source, args)
+    local Player = QBCore.Functions.GetPlayer(source)
+    local TargetId = Player.PlayerData.cid
+
+    if CheckOwnedJob(source) then
+        if Player.PlayerData.job.name =="police" then
+            if TargetId ~= nil then
+                TriggerClientEvent('qb-vehicleshop:client:SellCustomVehicle', source, TargetId)
+            end
         end
     else
         TriggerClientEvent('QBCore:Notify', source, "You don't have access to this command", 'error')
