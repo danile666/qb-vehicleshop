@@ -188,6 +188,86 @@ QB.VehicleShops = {
             },
         },
     }, -- Add your next table under this comma
+    [3] = {
+        -- Vehicle Shop options Police MRPD
+        ["ShopName"] = "police", -- Name to get in the shared.lua
+        ["ShopLabel"] = "Police Vehicle Shop", -- Blip name
+        ["Categories"] = {
+            ["trucks"] = "Trucks",
+            ["sedan"]  = "Sedans",
+            ["suv"]    = "SUVs",
+            ["motorcycle"]    = "Motorcycles",
+            ["interceptor"]    = "Interceptors",
+            ["offroad"] = "Offroads",
+            ["trailers"] = "Trailers",
+            ["swat"] = "Swat",
+        },
+        ["TestDriveTimeLimit"] = 3, -- Time in minutes until the vehicle gets deleted
+        ["Location"] = vector3(441.55, -989.55, 25.21), -- Blip Location
+        ["ReturnLocation"] = vector3(431.37, -983.04, 25.21), -- Location to return vehicle, only enables if the vehicleshop has a job owned
+        ["VehicleSpawn"] = vector4(430.63, -981.19, 25.7, 175.46), -- Spawn location when vehicle is bought
+        ["OwnedJob"] = "police", -- false or a job inside a string like "cardealer"
+        ["ShowroomVehicles"] = {
+            [1] = {
+                coords = vector4(436.46, -988.84, 24.65, 266.09),
+                defaultVehicle = '11cvpiw', -- The vehicle that needs to be there on restart
+                chosenVehicle = '11cvpiw', -- Keep this the same as defaultvehicle
+                inUse = false, -- When changing vehicle this gets set to true, don't change
+                buying = false, -- When buying a vehicle from an owned job this gets set to true, don't change
+            }, 
+            [2] = {
+                coords = vector4(426.21, -994.27, 24.65, 268.55),
+                defaultVehicle = 'durangoleo',
+                chosenVehicle = 'durangoleo',
+                inUse = false,
+                buying = false,
+            }, 
+            [3] = {
+                coords = vector4(445.68, -997.15, 24.65, 269.71),
+                defaultVehicle = 'kawasaki',
+                chosenVehicle = 'kawasaki',
+                inUse = false,
+                buying = false,
+            }, 
+            [4] = {
+                coords = vector4(446.47, -991.64, 24.65, 90.4),
+                defaultVehicle = 'amggtrleo',
+                chosenVehicle = 'amggtrleo',
+                inUse = false,
+                buying = false,
+            },
+        },
+        -- Non-changeable options (Don't touch these)
+        ["opened"] = false,
+        ["currentmenu"] = "main",
+        ["lastmenu"] = nil,
+        ["currentpos"] = nil,
+        ["selectedbutton"] = 0,
+        ["marker"] = { r = 0, g = 155, b = 255, a = 250, type = 1 },
+        ["menu"] = {
+            ["x"] = 0.14,
+            ["y"] = 0.15,
+            ["width"] = 0.12,
+            ["height"] = 0.03,
+            ["buttons"] = 10,
+            ["from"] = 1,
+            ["to"] = 10,
+            ["scale"] = 0.29,
+            ["font"] = 0,
+            ["main"] = {
+                ["title"] = "CATEGORIES",
+                ["Name"] = "main",
+                ["buttons"] = {
+                    {name = "Categories", description = ""},
+                }
+            },
+            ["vehicles"] = {
+                ["title"] = "VEHICLES",
+                ["name"] = "vehicles",
+                ["buttons"] = {}
+            },
+        },
+    }, -- Add your next table under this comma
 }
 
 QB.GarageLabel = {
@@ -218,4 +298,5 @@ QB.Classes = {
     [19] = 'military',  
     [20] = 'commercial',  
     [21] = 'trains',  
+    [22] = 'leo', 
 }
