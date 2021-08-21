@@ -135,9 +135,12 @@ end)
 
 Citizen.CreateThread(function()
     Citizen.Wait(1000)
+    local coordA = GetEntityCoords(GetPlayerPed(-1), 1)
+	local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, 20.0, 0.0)
+	local targetVehicle = getVehicleInDirection(coordA, coordB)
     for d = 1, #QB.VehicleShops do
         for i = 1, #QB.VehicleShops[d]["ShowroomVehicles"] do
-            local oldVehicle = GetClosestVehicle(QB.VehicleShops[d]["ShowroomVehicles"][i].coords.x, QB.VehicleShops[d]["ShowroomVehicles"][i].coords.y, QB.VehicleShops[d]["ShowroomVehicles"][i].coords.z, 3.0, 0, 70)
+            local oldVehicle = targetVehicle
             if oldVehicle ~= 0 then
                 QBCore.Functions.DeleteVehicle(oldVehicle)
             end
@@ -179,7 +182,8 @@ end)
 Citizen.CreateThread(function()
     Citizen.Wait(1000)
     while true do
-        
+        local Player = QBCore.Functions.GetPlayerData()
+        local job = PlayerJob.name 
         local ped = PlayerPedId()
         local pos = GetEntityCoords(ped)
         local dist = #(pos - vector3(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z))
@@ -211,8 +215,13 @@ Citizen.CreateThread(function()
                         DrawText3Ds(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z + 1.65, 'Currently In Use')
                     else
                         if CheckJob() then
-                            DrawText3Ds(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z + 1.9, '~g~G~w~ - Change Vehicle')
-                            DrawText3Ds(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z + 1.75, '~b~/sell [id]~w~ - Sell Vehicle ~b~/testdrive~w~ - Test Drive')
+                            if job ~="police" then
+                                DrawText3Ds(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z + 1.9, '~g~G~w~ - Change Vehicle')
+                                DrawText3Ds(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z + 1.75, '~b~/sell [id]~w~ - Sell Vehicle ~b~/testdrive~w~ - Test Drive')
+                            elseif job == "police" then
+                                DrawText3Ds(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z + 1.9, '~g~G~w~ - Change Vehicle')
+                                DrawText3Ds(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z + 1.75, '~b~/buy~w~ - Buy Vehicle ~b~/testdrive~w~ - Test Drive')
+                            end
                         end
 
                         if QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].buying then
@@ -402,8 +411,11 @@ end)
 
 RegisterNetEvent('qb-vehicleshop:client:setShowroomVehicle')
 AddEventHandler('qb-vehicleshop:client:setShowroomVehicle', function(showroomVehicle, k)
+    local coordA = GetEntityCoords(GetPlayerPed(-1), 1)
+	local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, 20.0, 0.0)
+	local targetVehicle = getVehicleInDirection(coordA, coordB)
     if QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][k].chosenVehicle ~= showroomVehicle then
-        QBCore.Functions.DeleteVehicle(GetClosestVehicle(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][k].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][k].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][k].coords.z, 3.0, 0, 70))
+        QBCore.Functions.DeleteVehicle(targetVehicle)
         modelLoaded = false
         Wait(250)
         local model = GetHashKey(showroomVehicle)
@@ -436,6 +448,15 @@ AddEventHandler('qb-vehicleshop:client:buyShowroomVehicle', function(vehicle, pl
         TriggerServerEvent("qb-vehicletuning:server:SaveVehicleProps", QBCore.Functions.GetVehicleProperties(veh))
     end, QB.VehicleShops[ClosestShopIndex]["VehicleSpawn"], true)
 end)
+
+--Test for new way to find and delete vehicle big tests
+function getVehicleInDirection(coordFrom, coordTo)
+	local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, PlayerPedId(), 0)
+	local a, b, c, d, vehicle = GetRaycastResult(rayHandle)
+	return vehicle
+end
+--End test function
+
 
 function setClosestShowroomVehicle(i)
     local pos = GetEntityCoords(PlayerPedId(), true)
